@@ -35,23 +35,31 @@ def init_game
 end
 
 def game_loop 
-  @currentArea = Area.new([0],@directions)
   action = ""
-  create_map()
+  initiate_map()
+
   while true
     unless @in_combat
-      indicate_inputs(@currentArea)      
-      action = explore_inputs(@currentArea, @player, @directions)
+      if @current_area.is_goal
+        puts ""
+        puts "--END OF LEVEL"
+        puts "--GOING TO THE NEXT FLOOR..."
+        puts ""
+        clear_map()
+        initiate_map()
+      end
+      indicate_explore(@current_area)
+      action = explore_inputs(@current_area, @player, @directions)
       if action == "forward" || action == "left" || action == "back" || action == "right"
-        @currentArea = Area.new(get_move_options(), @directions)
+        @current_area = get_new_area()
         check_encounter()
       end
     else
-      indicate_combat(@current_enemy)
-      action = combat_inputs(@player, @current_enemy)
+      indicate_combat(@current_area.enemy)
+      action = combat_inputs(@player, @current_area.enemy)
       if action == "attack" || action == "defend"
-        if @current_enemy.hp <= 0
-          @current_enemy = nil
+        if @current_area.enemy.hp <= 0
+          @current_area.enemy = nil
           @in_combat = false
         else
           enemy_action()
@@ -70,35 +78,32 @@ def game_loop
   puts "For more projects please visit https://github.com/jonn194"
 end
 
-def check_encounter()
-  random_enemy = rand(100)
-  random_item = rand(100)
-  if random_enemy > 50
+def initiate_map()
+  create_map(@directions, 10, 5, 3)
+  @current_area = @full_map[0]
+end
+
+def check_encounter() #CHECK IF THE AREA ALREADY HAS MOSTER/ITEM
+  if @current_area.enemy != nil
     @in_combat = true
-    rand_e = rand(4)
-    case rand_e
-      when 0 then @current_enemy = Slime.new()
-      when 1 then @current_enemy = Goblin.new()
-      when 2 then @current_enemy = Wolf.new()
-      when 3 then @current_enemy = Minotaur.new()
-    end
-    
-  elsif random_item > 50
-    rand_i = rand(3)
-    case rand_i
+  end
+
+  if @current_area.item > -1
+    case @current_area.item
       when 0 then @player.inventory[:health_potion].add_item(1)
       when 1 then @player.inventory[:mana_potion].add_item(1)
       when 2 then @player.inventory[:gold].add_item(1)
     end
+    @current_area.item = -1
   end
 end
 
 def enemy_action()
     rand_a = rand(100)
     if rand_a < 60
-      @current_enemy.attack(@player)
+      @current_area.enemy.attack(@player)
     else
-      @current_enemy.defend()
+      @current_area.enemy.defend()
     end
 end
 

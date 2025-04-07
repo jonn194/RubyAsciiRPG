@@ -7,38 +7,38 @@ def check_map(area)
 end
 
 def move(area, input, directions)
-  @moveConnections = []
+  @new_area = nil
   puts ""
   if directions[:forward].include? input
     if area.options.key?(:forward)
-      @moveConnections = area.forwardOp
+      @new_area = area.connectionUp
       puts "--MOVED FORWARD"
       puts ""
       return directions[:forward][1]
     else
       return wrong_direction()
     end
-  elsif directions[:left].include? input
-    if area.options.key?(:left)
-      @moveConnections = area.leftOp
-      puts "--MOVED LEFT"
-      puts ""
-      return directions[:left][1]
-    else
-      return wrong_direction()
-    end
   elsif directions[:back].include? input
     if area.options.key?(:back)
-      @moveConnections = area.backOp
+      @new_area = area.connectionDown
       puts "--MOVED BACK"
       puts ""
       return directions[:back][1]    
     else
       return wrong_direction()
     end
+  elsif directions[:left].include? input
+    if area.options.key?(:left)
+      @new_area = area.connectionLeft
+      puts "--MOVED LEFT"
+      puts ""
+      return directions[:left][1]
+    else
+      return wrong_direction()
+    end
   elsif directions[:right].include? input
     if area.options.key?(:right)
-      @moveConnections = area.rightOp
+      @new_area = area.connectionRight
       puts "--MOVED RIGHT"
       puts ""
       return directions[:right][1]

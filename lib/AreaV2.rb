@@ -2,16 +2,18 @@ require_relative "Enemy"
 require_relative "Item"
 
 class AreaV2
-  attr_reader :map
+  attr_accessor :is_goal
 
+  attr_accessor :options
   attr_accessor :enemy
   attr_accessor :item
-
+  
   attr_accessor :connectionUp
   attr_accessor :connectionDown
   attr_accessor :connectionLeft
   attr_accessor :connectionRight
-
+  
+  attr_reader :map
   attr_reader :upCn
   attr_reader :downCn
   attr_reader :leftCn
@@ -19,16 +21,20 @@ class AreaV2
 
   attr_reader :possibleDir
 
+
   def initialize(dir)
-    @map = []
+    @is_goal = false
     
+    @options = Hash.new
     @enemy = nil
     @item = -1
-
+    
     @connectionUp = nil
     @connectionDown = nil
     @connectionLeft = nil
     @connectionRight = nil
+    
+    @map = []
     @upCn = [0, 2, 6, 7]
     @downCn = [0, 3, 4, 5]
     @leftCn = [1, 2, 3, 4, 6]

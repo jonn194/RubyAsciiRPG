@@ -27,7 +27,7 @@ end
 @action_consume_1 = ["1", "health"]
 @action_consume_2 = ["2", "mana"]
 
-def indicate_inputs(area)
+def indicate_explore(area)
     print "Possible Movement: " 
     area.options.each{ |k, v| print "| (#{v[0]}) #{v[1]} |" }
     
@@ -88,6 +88,6 @@ def validate_direction(input, directions)
   end
 end
 
-def get_move_options()
-  return @moveConnections
+def get_new_area()
+  return @new_area
 end
