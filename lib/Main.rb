@@ -6,7 +6,7 @@ require_relative "Item"
 require_relative "CreateMap"
 include RPGElements
 
-@player_classes = ["knight", "brawler", "mage", "Rogue"]
+@player_classes = ["knight", "brawler", "mage", "rogue"]
 @full_map = []
 @directions = {
   forward: ["w", "forward"],
@@ -41,12 +41,7 @@ def game_loop
   while true
     unless @in_combat
       if @current_area.is_goal
-        puts ""
-        puts "--END OF LEVEL"
-        puts "--GOING TO THE NEXT FLOOR..."
-        puts ""
-        clear_map()
-        initiate_map()
+        next_floor()
       end
       indicate_explore(@current_area)
       action = explore_inputs(@current_area, @player, @directions)
@@ -55,14 +50,15 @@ def game_loop
         check_encounter()
       end
     else
-      indicate_combat(@current_area.enemy)
+      indicate_combat(@player, @current_area.enemy)
       action = combat_inputs(@player, @current_area.enemy)
-      if action == "attack" || action == "defend"
+      if action == "attack" || action == "defend" || action == "skill"
         if @current_area.enemy.hp <= 0
           @current_area.enemy = nil
           @in_combat = false
+          @player.out_of_combat()
         else
-          enemy_action()
+          @current_area.enemy.get_action(@player)
         end
 
         break if @player.hp <= 0
@@ -78,17 +74,26 @@ def game_loop
   puts "For more projects please visit https://github.com/jonn194"
 end
 
-def initiate_map()
+def initiate_map() #CREATES A NEW MAP
   create_map(@directions, 10, 5, 3)
   @current_area = @full_map[0]
 end
 
+def next_floor()
+  puts ""
+  puts "--END OF LEVEL"
+  puts "--GOING TO THE NEXT FLOOR..."
+  puts ""
+  clear_map()
+  initiate_map()
+end
+
 def check_encounter() #CHECK IF THE AREA ALREADY HAS MOSTER/ITEM
-  if @current_area.enemy != nil
+  if @current_area.enemy != nil #IF THERE IS A MONSTER ENTERS COMBAT STATE
     @in_combat = true
   end
 
-  if @current_area.item > -1
+  if @current_area.item > -1 #IF THERE IS AN ITEM, ADD IT TO THE INVENTORY
     case @current_area.item
       when 0 then @player.inventory[:health_potion].add_item(1)
       when 1 then @player.inventory[:mana_potion].add_item(1)
@@ -96,15 +101,6 @@ def check_encounter() #CHECK IF THE AREA ALREADY HAS MOSTER/ITEM
     end
     @current_area.item = -1
   end
-end
-
-def enemy_action()
-    rand_a = rand(100)
-    if rand_a < 60
-      @current_area.enemy.attack(@player)
-    else
-      @current_area.enemy.defend()
-    end
 end
 
 Main()

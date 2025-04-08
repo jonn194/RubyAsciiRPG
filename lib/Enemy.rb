@@ -40,6 +40,15 @@ class Enemy
     end
   end
 
+  def get_action(player) #DETERMINES THE ACTIONS OF THE ENEMY
+    rand_a = rand(100)
+    if rand_a < 60
+      attack(player)
+    else
+      defend()
+    end
+  end
+
 end
 
 class Slime < Enemy

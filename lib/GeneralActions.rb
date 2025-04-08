@@ -23,11 +23,11 @@ def check_inventory(player)
   else
     if player.inventory[:health_potion].amount > 0
       puts ""
-      print "| Consume: (1) health |"
+      print "| Consume: (6) health |"
     end
     if player.inventory[:mana_potion].amount > 0
       puts ""
-      print "| Consume: (2) mana |"
+      print "| Consume: (7) mana |"
     end
     puts ""
   end
